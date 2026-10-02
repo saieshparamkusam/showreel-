@@ -293,7 +293,7 @@ def draw_text(canvas, s, fnt, x, y, fill=(255, 255, 255), anchor="l", tracking=0
     canvas.paste(Image.new("RGB", layer.size, fill), (x, y), layer)
     return wd, hh
 
-def pill(canvas, label, cx, cy, t, size=30, appear=0.0):
+def pill(canvas, label, cx, cy, t, size=34, appear=0.0):
     """Small glass capsule with label."""
     f = font("Inter-SemiBold", size)
     tr = 3
@@ -313,21 +313,25 @@ def pill(canvas, label, cx, cy, t, size=30, appear=0.0):
 def _blend(A, B, mask):
     return Image.composite(B, A, mask)
 
-def tr_slats(A, B, p, n=12):
+def tr_slats(A, B, p, n=8):
+    """Glass slats rise bottom-to-top, staggered left to right, with a bright leading edge."""
     p = clamp(p)
     mask = np.zeros((H, W), np.float32)
+    line = np.zeros((H, W), np.float32)
     cw = W / n
     ys = np.arange(H, dtype=np.float32)[:, None]
     for i in range(n):
-        pl = e_inout(clamp((p * 1.7 - (i / n) * 0.7)), 3)
-        x0, x1 = int(i * cw), int((i + 1) * cw) + 1
-        if i % 2:
-            col = (ys > H * (1 - pl))
-        else:
-            col = (ys < H * pl)
-        mask[:, x0:x1] = col.astype(np.float32)
+        pl = e_inout(clamp(p * 1.6 - (i / n) * 0.6), 3)
+        x0, x1 = int(round(i * cw)), int(round((i + 1) * cw))
+        front = H * (1 - pl)
+        mask[:, x0:x1] = (ys >= front).astype(np.float32)
+        if 0.0 < pl < 1.0:
+            line[:, x0:x1] = (np.abs(ys - front) < 2.5).astype(np.float32)
+        if i:
+            line[:, x0:x0 + 2] = np.maximum(line[:, x0:x0 + 2], 0.35 * ((ys >= front) | (pl >= 1.0)))
     out = _blend(A, B, Image.fromarray((mask * 255).astype(np.uint8)))
-    return out
+    arr = np.asarray(out, dtype=np.float32) + line[..., None] * 170
+    return Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8))
 
 def tr_iris(A, B, p, aspect=(1.0, 0.62)):
     p = clamp(p)

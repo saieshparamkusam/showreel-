@@ -92,7 +92,7 @@ def S_hook(name, p0, p1, z0, z1, dur, slit=False, rot=0.0):
 def S_identity():
     def f(t, T):
         c = new_canvas((6, 6, 8))
-        collage(c, t + 2.0, speed=46, h=360, dim=0.52)
+        collage(c, t + 2.0, speed=85, h=360, dim=0.52)
         dark = Image.new("RGB", (W, H), (4, 4, 6))
         c = Image.blend(c, dark, 0.42)
         p = e_out(t / 0.8, 3)
@@ -110,7 +110,7 @@ def S_identity():
         d = ImageDraw.Draw(c)
         d.rectangle((x + 4, 782, x + 4 + int(1350 * rr), 783), fill=(255, 255, 255))
         words = ["Brand Identity", "Packaging", "Typography", "Graphic Design"]
-        fsm = font("Inter-SemiBold", 27)
+        fsm = font("Inter-SemiBold", 31)
         xx = x + 4
         for i, w_ in enumerate(words):
             a = e_out((t - 2.3 - i * 0.28) / 0.5, 2)
@@ -154,7 +154,7 @@ def S_hero(name, label=None, dur=2.0, h0=930, h1=985, rot0=-0.03, rot1=0.0, bgn=
         h = lerp(h0, h1, e_out(u, 2)) * lerp(0.88, 1.0, o)
         place(c, name, W / 2, H / 2 - 10 + (1 - o) * 60, h, rot=lerp(rot0, rot1, e_out(u, 2)), radius=26, shadow=0.7, rim=0.6)
         if label:
-            pill(c, label, W / 2, 1010, t, appear=0.3, size=26)
+            pill(c, label, W / 2, 995, t, appear=0.3, size=30)
         return c
     return f
 
@@ -165,10 +165,11 @@ def S_duo(a, b, label, dur=2.0, flip=False):
         eb = e_expo((t - 0.14) / 0.8)
         fl = -1 if flip else 1
         yb = math.sin(t * 1.3) * 8
-        place(c, a, W / 2 - 330 * fl, 560 + (1 - ea) * 700 + yb, 860, rot=-0.045 * fl, radius=26, shadow=0.65, rim=0.6)
-        place(c, b, W / 2 + 330 * fl, 515 + (1 - eb) * 700 - yb, 800, rot=0.04 * fl, radius=26, shadow=0.65, rim=0.6)
+        u = clamp(t / dur)
+        place(c, a, W / 2 - (330 + 40 * u) * fl, 560 + (1 - ea) * 700 + yb, 860 + 30 * u, rot=(-0.045 + 0.02 * u) * fl, radius=26, shadow=0.65, rim=0.6)
+        place(c, b, W / 2 + (330 + 40 * u) * fl, 515 + (1 - eb) * 700 - yb, 800 + 30 * u, rot=(0.04 - 0.02 * u) * fl, radius=26, shadow=0.65, rim=0.6)
         if label:
-            pill(c, label, W / 2, 990, t, appear=0.35, size=26)
+            pill(c, label, W / 2, 985, t, appear=0.35, size=30)
         return c
     return f
 
@@ -177,12 +178,13 @@ def S_trio(names, label=None, dur=3.0):
     def f(t, T):
         c = bg(b, t, dim=0.55)
         e0 = e_expo(t / 0.8); e1 = e_expo((t - 0.12) / 0.8); e2 = e_expo((t - 0.24) / 0.8)
-        drift = lerp(-20, 20, clamp(t / dur))
-        place(c, a, 430 + drift * 0.5, 560 + (1 - e0) * 800, 780, rot=-0.07, radius=24, shadow=0.6, rim=0.5, brightness=0.9)
-        place(c, cc, 1490 - drift * 0.5, 540 + (1 - e2) * 800, 780, rot=0.07, radius=24, shadow=0.6, rim=0.5, brightness=0.9)
-        place(c, b, W / 2, 530 + (1 - e1) * 800 - drift * 0.4, 930, rot=0.0, radius=26, shadow=0.75, rim=0.65)
+        drift = lerp(-70, 70, clamp(t / dur))
+        bob = math.sin(t * 1.6) * 10
+        place(c, a, 430 + drift * 0.5, 560 + bob + (1 - e0) * 800, 780, rot=-0.07, radius=24, shadow=0.6, rim=0.5, brightness=0.9)
+        place(c, cc, 1490 - drift * 0.5, 540 - bob + (1 - e2) * 800, 780, rot=0.07, radius=24, shadow=0.6, rim=0.5, brightness=0.9)
+        place(c, b, W / 2, 515 + (1 - e1) * 800 - drift * 0.4, 880 + drift * 0.15, rot=0.0, radius=26, shadow=0.75, rim=0.65)
         if label:
-            pill(c, label, W / 2, 1020, t, appear=0.4, size=24)
+            pill(c, label, W / 2, 1000, t, appear=0.4, size=30)
         return c
     return f
 
@@ -190,7 +192,7 @@ def S_tagline(name="37", dur=2.0):
     def f(t, T):
         c = bg("03", t, dim=0.5, tint=(120, 140, 170))
         e = e_expo(t / 0.8)
-        place(c, name, 1400 + (1 - e) * 500, 540, 900, rot=0.035, radius=26, shadow=0.65, rim=0.6)
+        place(c, name, 1400 + (1 - e) * 500 - 40 * clamp(t / dur), 540 + 12 * math.sin(t * 1.4), 900 + 40 * clamp(t / dur), rot=0.035 - 0.03 * clamp(t / dur), radius=26, shadow=0.65, rim=0.6)
         fs = font("InstrumentSerif-Italic", 120)
         for i, line in enumerate(("Clarity", "through", "simplicity.")):
             r = e_expo((t - 0.2 - i * 0.14) / 0.75)
@@ -395,7 +397,7 @@ def S_end():
                   shadow=0.35, alpha=clamp(r * 1.4))
             draw_text(c, em, fe, cx, 685 + yo, anchor="c", alpha=clamp(r * 2))
         r = e_out((t - 2.1) / 0.8, 2)
-        fa = font("Inter-SemiBold", 27)
+        fa = font("Inter-SemiBold", 30)
         draw_text(c, "AVAILABLE REMOTELY WORLDWIDE", fa, cx, 812, anchor="c", tracking=5, alpha=r, fill=(214, 214, 220))
         return c
     return f
@@ -422,18 +424,18 @@ TIMELINE = [
     (0.0, "cut", 0.0, S_hook("03", (0.66, 0.20), (0.5, 0.26), 1.75, 1.08, 2.4, slit=True)),
     (2.0, "slats", 0.30, S_hook("15", (0.5, 0.32), (0.5, 0.40), 1.7, 1.15, 2.4)),
     (4.0, "iris", 0.50, S_identity()),
-    (9.0, "zoom", 0.30, S_window("19", (0.5, 0.10), (0.5, 0.42), 1.9, 1.15, "Typography", (160, 100, 1760, 820), 2.2)),
-    (11.0, "push", 0.25, S_window("18", (0.5, 0.60), (0.5, 0.66), 1.7, 1.15, "Hierarchy", (680, 90, 1780, 850), 2.2,
+    (9.0, "zoom", 0.30, S_window("19", (0.5, 0.12), (0.5, 0.45), 1.6, 1.0, "Typography", (160, 100, 1760, 820), 2.2)),
+    (11.0, "push", 0.25, S_window("18", (0.5, 0.62), (0.5, 0.64), 1.35, 1.0, "Hierarchy", (680, 90, 1780, 850), 2.2,
                                   peek=("24", 330, 570, 720, -0.06))),
-    (13.0, "wipe", 0.30, S_window("01", (0.33, 0.84), (0.5, 0.52), 1.9, 1.05, "Color", (330, 90, 1590, 850), 2.2)),
-    (15.0, "slats", 0.30, S_window("24", (0.5, 0.28), (0.45, 0.60), 1.9, 1.2, "Composition", (130, 130, 1330, 850), 2.2,
+    (13.0, "wipe", 0.30, S_window("01", (0.30, 0.80), (0.5, 0.52), 1.3, 1.0, "Color", (330, 90, 1590, 850), 2.2)),
+    (15.0, "slats", 0.30, S_window("24", (0.5, 0.26), (0.45, 0.58), 1.45, 1.05, "Composition", (130, 130, 1330, 850), 2.2,
                                    peek=("22", 1590, 530, 700, 0.05))),
     (17.0, "iris", 0.40, S_trio(("08", "15", "11"), dur=3.0)),
     (20.0, "zoom", 0.30, S_tagline("37", 2.0)),
     (22.0, "push", 0.25, S_duo("Albums_What_We_Build", "Albums_Digital_Designer", "Brand Identity")),
     (24.0, "wipe", 0.30, S_window("Protocol_01_Poster_v02", (0.5, 0.12), (0.5, 0.82), 1.1, 1.1, "Poster Design",
                                   (140, 100, 1780, 840), 2.0)),
-    (26.0, "slats", 0.30, S_window("Afterdark_01", (0.5, 0.32), (0.5, 0.32), 1.2, 1.2, "Typography",
+    (26.0, "slats", 0.30, S_window("Afterdark_01", (0.5, 0.18), (0.5, 0.58), 1.5, 1.05, "Typography",
                                    (260, 100, 1660, 840), 2.0, rampy=True)),
     (28.0, "zoom", 0.30, S_duo("Noir_Nights_001", "Warp_Gradients", "Color Systems", flip=True)),
     (30.0, "pushl", 0.25, S_trio(("28", "32", "42"), "Graphic Design", dur=2.0)),

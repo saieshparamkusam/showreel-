@@ -366,6 +366,14 @@ def main():
             dly_out[tgt, sh:] += s[:N - sh] * (0.45 ** rep)
     dly_out = lp(dly_out, 4500)
     mix = dry + dry_pad * duck + bass_bus * duck + wet_out * 0.9 + dly_out * 0.5
+    # pre-impact silence dips so the big hits land on contrast (36 s, 49 s, 55 s)
+    for hit_t, gap in ((36.0, 0.14), (49.0, 0.18), (55.0, 0.20)):
+        i1 = int(hit_t * SR); i0 = i1 - int(gap * SR)
+        env = np.ones(N, np.float32)
+        r = int(0.02 * SR)
+        env[i0:i0 + r] = np.linspace(1, 0.08, r)
+        env[i0 + r:i1] = 0.08
+        mix *= env
     # master: gentle bus compression-ish (tanh) and limiting
     mix = hp(mix, 28)
     mix = np.tanh(mix * 0.9) / np.tanh(0.9)
