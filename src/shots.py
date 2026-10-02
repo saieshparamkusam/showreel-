@@ -332,6 +332,7 @@ WALL_KEYS = [  # (time, row, col, scale, rot, tilt_x, tilt_y, snap)
 ]
 
 def _wall_state(T):
+    T = T + 0.20   # camera moves are timed to ARRIVE on the beat
     ks = WALL_KEYS
     if T <= ks[0][0]:
         return ks[0][1:7]
@@ -340,7 +341,7 @@ def _wall_state(T):
         if a[0] <= T < b[0]:
             u = (T - a[0]) / (b[0] - a[0])
             if b[7]:
-                e = e_expo(u * 4.2) * 0.965 + 0.035 * u   # beat snap: fast settle, then slow float
+                e = e_inout(clamp(u * 3.4), 3) * 0.965 + 0.035 * u   # beat snap: smooth fast move, then slow float
             else:
                 e = ramp(u)
             return [lerp(a[j], b[j], e) for j in range(1, 7)]
@@ -368,7 +369,8 @@ def S_wall():
         out = im.transform((W, H), Image.AFFINE, (a, b_, c0_, d, e, f0), Image.BICUBIC)
         out = keystone(out, tx, ty)
         return out
-    f.mb = 0.55 / FPS
+    f.mb = 0.5 / FPS
+    f.mb_n = 9
     return f
 
 # ---------------------------------------------------------------- end card
@@ -466,11 +468,13 @@ def render_frame(n):
         mb = getattr(f_, "mb", 0)
         if mb:
             acc = None
-            for k, off in enumerate((-mb, 0.0, mb)):
+            ns = getattr(f_, "mb_n", 3)
+            offs = [mb * (2.0 * k / (ns - 1) - 1.0) for k in range(ns)]
+            for off in offs:
                 im = f_(max(0.0, loc + off), tt + off)
                 a = np.asarray(im, dtype=np.float32)
                 acc = a if acc is None else acc + a
-            return Image.fromarray((acc / 3).astype(np.uint8))
+            return Image.fromarray((acc / ns).astype(np.uint8))
         return f_(loc, tt)
     B = draw(idx, T)
     if idx > 0 and T < cut and d > 0:
