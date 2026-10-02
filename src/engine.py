@@ -114,6 +114,8 @@ def bg(name, t, dim=0.42, zoom=1.7, drift=14, tint=None):
     small = im.resize((W // 8, H // 8), Image.BICUBIC, box=(ox, oy, ox + cw, oy + ch))
     small = small.filter(ImageFilter.GaussianBlur(9))
     a = np.asarray(small.resize((W, H), Image.BICUBIC), dtype=np.float32)
+    lum = float(a.mean()) / 255.0
+    dim = dim * min(1.0, 0.30 / max(lum, 0.05))   # keep the backdrop dark behind bright posters
     a = a * dim + np.array([6, 6, 9], np.float32)
     if tint is not None:
         a = a * 0.85 + np.array(tint, np.float32) * 0.15
@@ -185,7 +187,7 @@ def place(canvas, name, cx, cy, h, rot=0.0, radius=26, alpha=1.0, shadow=0.55, r
     bw, bh = bx1 - bx0, by1 - by0
     aff = _affine(iw, ih, s_l, cx - bx0, cy - by0, rot)
     img = src.transform((bw, bh), Image.AFFINE, aff, Image.BICUBIC)
-    r_src = max(2, int(round(radius / s_l / 6) * 6))
+    r_src = 0 if radius <= 0 else max(2, int(round(radius / s_l / 6) * 6))
     pm = round_mask(iw, ih, r_src, ss=1)
     m = pm.transform((bw, bh), Image.AFFINE, aff, Image.BILINEAR)
     if clip is not None:

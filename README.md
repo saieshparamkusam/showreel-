@@ -15,12 +15,15 @@
 
 Run `./build.sh` to rebuild (needs ffmpeg and `pip install pillow numpy scipy fonttools brotli`).
 
+## Poster rule
+Every poster is shown **complete**: all four edges visible, original aspect ratio, no rounded corners, no shape used as a frame or container, no overlaps. Masks are used only as brief reveal wipes (and transitions); glass discs sit *behind* posters. Backdrops are heavily blurred colour fields, not poster crops.
+
 ## Structure (beat-locked)
-0–4 hook (macro crop reveal, slat transition) · 4–9 identity · 9–22 craft (Typography, Hierarchy, Color, Composition, tagline) · 22–36 range + services card · 36–49 momentum (1-beat, ¼-s and triptych cuts, accelerating rows, snare roll) · 49–55 climax (single composited poster wall, camera snaps on every beat, pull-back, push to hero) · 55–60 contact card.
+0–4 hook (complete REWIND, slit reveal; RELICS via slat transition) · 4–9 identity (name + complete Warp Gradients poster) · 9–22 craft (Typography, Hierarchy, Color, Composition, tagline; one poster per chapter, then pairs/trios) · 22–32 range (pairs, hero, trio) · 32–36 services card · 36–49 momentum (one complete poster per beat, per quarter-second, then 2–3 poster layouts on every beat) · 49–53 climax (layouts accelerate from 1 to 5 posters, then rapid singles) · 53–55 all 18 posters assemble on one grid · 55–60 contact card.
 
 ## Notes
 - **Phone number is deliberately omitted**: it was supplied as unconfirmed (`812843410`). To add it, edit `S_end()` in `src/shots.py` once confirmed.
 - No corner marks, logos, watermarks, timecodes or badges: all graphics sit inside the centre safe area.
 - Posters featuring real brands/artists (Nike, Ray-Ban, David Guetta, Don Toliver, Travis Scott–style Pressure Drop 23) were left out to avoid implying client work.
-- Posters are ~1080 px wide, so tight macro crops are upscaled (Lanczos); crops are kept moderate for that reason. Higher-resolution exports would make them crisper.
+- Posters are ~1080 px wide, so they are upscaled slightly (Lanczos) when shown large. Higher-resolution exports would make them crisper.
 - The repository contains posters and a few brand-style layouts only; no packaging mockups were supplied, so "Packaging" appears only as copy, never as invented imagery.

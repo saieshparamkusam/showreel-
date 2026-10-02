@@ -328,6 +328,14 @@ def build():
     for ts in (49.5, 50.0, 50.5, 51.0, 51.5, 52.0, 52.5):
         add(dry, sub_hit(0.6, 90, 48), ts, 0, 0.45)
         add(dry, sweep(0.3, 900, 7000, 1.2, vel=0.35), ts - 0.05, 0, 1.0)
+    for ts in (51.75, 52.25, 52.75):
+        add(dry, tick(0.6, 2100), ts, 0, 1.0)
+        add(dry, sub_hit(0.4, 90, 50), ts, 0, 0.4)
+    for ts in (44.5, 45.0, 45.5, 46.0, 46.5):
+        add(dry, sub_hit(0.5, 80, 45), ts, 0, 0.45)
+        add(dry, tick(0.4, 1700), ts, 0, 1.0)
+    for k in range(18):                     # wall assembles: rising tick per poster
+        add(dry, tick(0.32, 1300 + 70 * k), 53.0 + k * 0.045, (-1) ** k * 0.3, 1.0)
     # 53.0 pull-back, 53-54.75 riser, impact at 55
     add(dry, sweep(1.0, 500, 2500, 1.0, vel=0.45), 52.7, 0, 1.0)
     add(dry, riser(1.75, 350, 12000, 0.7), 53.0, 0, 1.0)
