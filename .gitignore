@@ -1,0 +1,5 @@
+out/chunks/
+out/video_only.mp4
+out/audio_raw.wav
+out/render.log
+__pycache__/
